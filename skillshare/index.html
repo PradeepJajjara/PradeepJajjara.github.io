@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Learning Plan Submission</title>
+    <link rel="stylesheet" type="text/css" href="src/styles.css" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Submit Your Learning Plan</h2>
+      <form id="learningPlanForm">
+        <input
+          type="text"
+          id="assignment_duration"
+          placeholder="Assignment Duration"
+          required
+        />
+        <input type="text" id="topic" placeholder="Topic" required />
+        <input
+          type="text"
+          id="current_level"
+          placeholder="Current Level"
+          required
+        />
+        <input
+          type="number"
+          id="duration_max"
+          placeholder="Maximum Duration"
+          required
+        />
+        <button type="submit">Submit</button>
+      </form>
+      <div id="loading" class="hidden">Loading...</div>
+      <div id="response"></div>
+      <!-- ... existing HTML ... -->
+
+      <div id="finalAssignmentContainer" class="response-container">
+        <h3>Final Assignment</h3>
+        <div id="finalAssignment"></div>
+      </div>
+
+      <div id="studyPlanContainer" class="response-container">
+        <h3>Study Plan</h3>
+        <div id="studyPlan"></div>
+      </div>
+
+      <!-- ... existing HTML ... -->
+    </div>
+    <script src="src/index.js"></script>
+  </body>
+</html>
