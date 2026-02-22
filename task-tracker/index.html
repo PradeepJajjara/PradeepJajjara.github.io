@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+    <div class="bg-orb bg-orb-one" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-two" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <main class="login-shell">
+        <section class="login-card glass-card" aria-labelledby="loginTitle">
+            <p class="kicker">Cloud Sync Enabled</p>
+            <h1 id="loginTitle">Task Tracker</h1>
+            <p class="subtitle">Sign in with your app email and password to sync tasks across devices.</p>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email">App Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="username" placeholder="you@app.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter password">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Sign In</button>
+                <div id="errorMessage" class="error-message hidden" role="alert"></div>
+            </form>
+
+            <div class="help-text">
+                <p><strong>How accounts work:</strong> use dedicated app credentials, not your personal email password.</p>
+                <p>Admin can manage all users from dashboard view controls.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="toastContainer" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
