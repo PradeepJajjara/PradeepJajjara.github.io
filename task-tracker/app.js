@@ -192,6 +192,9 @@ async function initializeDashboard() {
             masterControls.classList.remove("hidden");
         }
         await loadUserProfiles();
+        if (!userProfiles.some((profile) => profile.id === viewingUserId)) {
+            viewingUserId = currentProfile.id;
+        }
         populateViewUserOptions();
     }
 
@@ -272,7 +275,9 @@ function populateViewUserOptions() {
         select.appendChild(option);
     });
 
-    select.value = viewingUserId;
+    if (rows.some((profile) => profile.id === viewingUserId)) {
+        select.value = viewingUserId;
+    }
 }
 
 async function refreshDashboardData() {
@@ -1072,10 +1077,14 @@ async function migrateLegacyData(allUsers) {
             continue;
         }
 
-        const normalized = normalizeImportedTasks(tasks);
-        await replaceUserTasks(profile.id, normalized);
-        localStorage.setItem(`migrated_to_cloud_${username}`, "1");
-        migratedCount += 1;
+        try {
+            const normalized = normalizeImportedTasks(tasks);
+            await replaceUserTasks(profile.id, normalized);
+            localStorage.setItem(`migrated_to_cloud_${username}`, "1");
+            migratedCount += 1;
+        } catch (error) {
+            showToast(`Migration failed for ${username}: ${error.message || "unknown error"}`, "error");
+        }
     }
 
     await refreshDashboardData();

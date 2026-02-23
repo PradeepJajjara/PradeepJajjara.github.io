@@ -1,97 +1,106 @@
-# Task Tracker
+# Task Tracker (Supabase Cloud Sync)
 
-A simple and intuitive task tracking web application to help you manage your daily and weekly goals.
+Premium-looking daily/weekly task tracker with Supabase Auth + Postgres sync.
 
-## 🎯 Features
+## What this app supports
 
-- ✅ **Daily & Weekly Tasks** - Track both daily habits and weekly goals
-- 📊 **Progress Tracking** - Visual checkboxes for each day of the week
-- 👥 **Multi-User Support** - Separate task lists for different users
-- 🔐 **Simple Authentication** - Secure login system
-- 👨‍💼 **Admin Dashboard** - Master account to view and manage all users' tasks
-- 📱 **Responsive Design** - Works on desktop and mobile devices
-- 💾 **Local Storage** - All data saved in browser (no backend required)
-
-## 🔑 Login Credentials
-
-### Regular Users:
-- **Username:** `pradeep` | **Password:** `pradeep123`
-- **Username:** `sankar` | **Password:** `sankar123`
-
-### Admin/Master Account:
-- **Username:** `master` | **Password:** `master123`
-  - Can view and edit all users' tasks
-  - Switch between users using the dropdown
-
-## 🚀 How to Use
-
-### For Regular Users:
-1. Login with your credentials
-2. Click **"+ Add Task"** to create a new task
-3. Choose task type:
-   - **Daily**: For habits you want to do every day
-   - **Weekly Goal**: Set a target (e.g., "Apply to 5 companies this week")
-4. Use the **Day View** to focus on today's tasks
-5. Use the **Week View** to see your entire week at a glance
-6. Check off tasks as you complete them
-
-### For Admin (Master Account):
-1. Login as `master`
-2. Use the **"View User"** dropdown to switch between users
-3. View and edit any user's tasks
-4. Monitor progress across all users
-
-## 📦 Task Examples
-
-- **Daily Tasks:**
-  - Workout
-  - Run 1 mile
-  - Read for 30 minutes
-  - Meditate
-  
-- **Weekly Goals:**
-  - Apply to 5 companies (set target: 5)
-  - Reduce screen time to 14 hours/week
-  - Complete 3 project milestones
-
-## 🛠️ Technical Details
-
-- **Frontend Only** - Pure HTML, CSS, and JavaScript
-- **Storage** - Browser localStorage (data persists locally)
-- **No Backend Required** - Works offline after first load
-
-## 🌐 Access
-
-Visit: `https://pradeepjajjara.github.io/task-tracker/`
-
-## 📝 Future Enhancements (Backend Options)
-
-If you want to sync data across devices, consider these free backend options:
-
-1. **PythonAnywhere** (Free Tier)
-   - You're already using it for study-plan
-   - Can host Flask/Django APIs
-   - 1 web app free
-
-2. **Vercel/Netlify Functions**
-   - Serverless functions
-   - Free tier available
-   - Easy deployment
-
-3. **Firebase**
-   - Real-time database
-   - Authentication
-   - Free tier: 1GB storage
-
-4. **Supabase**
-   - PostgreSQL database
-   - RESTful API
-   - Free tier: 500MB storage
-
-## 📄 License
-
-Free to use and modify for personal purposes.
+- Day / Week task views
+- Task CRUD (add/edit/delete)
+- Daily and weekly completion tracking
+- Admin user switching (`View User` dropdown)
+- Cloud import/export backup tools
+- Legacy localStorage migration banner + one-click migration
+- Responsive UI (glass + gradient styling)
 
 ---
 
-**Made with ❤️ for productivity and accountability**
+## Prerequisites
+
+- A Supabase project
+- Browser access to Supabase SQL Editor and Authentication dashboard
+- GitHub Pages (or any static hosting)
+
+---
+
+## Setup order (exact sequence)
+
+1. **Create Supabase project**
+   - Supabase Dashboard → **New project**.
+
+2. **Create Auth users (email/password)**
+   - Dashboard → **Authentication** → **Users** → **Add user**.
+   - Create at least:
+     - one regular user (example: `pradeep@app.local`)
+     - one regular user (example: `sankar@app.local`)
+     - one admin user (example: `master@app.local`)
+
+3. **Run schema + RLS SQL**
+   - Dashboard → **SQL Editor** → **New query**.
+   - Paste and run: `task-tracker/supabase/schema.sql`.
+
+4. **Insert profile rows mapped to Auth user IDs**
+   - Dashboard → **Table Editor** → `auth.users` and copy each user `id`.
+   - Insert rows into `public.profiles` with matching `id` values:
+     - `username`: short handle used by app (example: `pradeep`)
+     - `display_name`: label for UI (example: `Pradeep`)
+     - `role`: `user` or `admin`
+
+   Example SQL (replace UUIDs):
+   ```sql
+   insert into public.profiles (id, username, display_name, role)
+   values
+     ('00000000-0000-0000-0000-000000000001', 'pradeep', 'Pradeep', 'user'),
+     ('00000000-0000-0000-0000-000000000002', 'sankar', 'Sankar', 'user'),
+     ('00000000-0000-0000-0000-000000000003', 'master', 'Master', 'admin')
+   on conflict (id) do update
+   set username = excluded.username,
+       display_name = excluded.display_name,
+       role = excluded.role;
+   ```
+
+5. **Get project API keys**
+   - Dashboard → **Project Settings** → **API**.
+   - Copy:
+     - Project URL
+     - anon public key
+
+6. **Configure frontend globals**
+   - Before `task-tracker/app.js` runs, define:
+   ```html
+   <script>
+     window.TASK_TRACKER_SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+     window.TASK_TRACKER_SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+   </script>
+   ```
+   - Keep this script in `task-tracker/index.html` and `task-tracker/dashboard.html` (or shared include) before loading `app.js`.
+
+7. **Open app and sign in**
+   - Visit `/task-tracker/`
+   - Sign in using Auth email/password from step 2.
+
+---
+
+## Run / validation flow
+
+1. Sign in as regular user and verify only own tasks are visible.
+2. Add/edit/delete tasks, then refresh page to confirm cloud persistence.
+3. Sign in as admin and switch users using **View User**.
+4. Use export/import to validate backup path.
+5. If old browser keys exist (`tasks_<username>`), test migration banner action.
+
+---
+
+## Local developer checks
+
+- Syntax check:
+  ```bash
+  node --check task-tracker/app.js
+  ```
+
+---
+
+## Notes
+
+- This is a static frontend; the anon key is expected client-side.
+- RLS policies in `schema.sql` are what enforce data isolation.
+- Admin is determined by `profiles.role = 'admin'`.
