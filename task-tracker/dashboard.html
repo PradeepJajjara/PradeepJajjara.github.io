@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+    <div class="bg-orb bg-orb-one" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-two" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <div class="dashboard-shell">
+        <header class="dashboard-header glass-card">
+            <div class="header-left">
+                <p class="kicker">Daily Focus</p>
+                <h1>Task Tracker</h1>
+                <span id="currentUser" class="status-pill"></span>
+                <span class="sync-pill" id="syncStatus">Cloud Sync</span>
+            </div>
+            <div class="header-right">
+                <div id="masterControls" class="master-controls hidden">
+                    <label for="viewUser">View User</label>
+                    <select id="viewUser"></select>
+                </div>
+                <button id="exportBtn" class="btn btn-secondary" title="Backup your data">Export</button>
+                <button id="importBtn" class="btn btn-secondary" title="Restore your data">Import</button>
+                <input type="file" id="importFile" accept=".json" class="hidden">
+                <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <section id="migrationBanner" class="migration-banner glass-card hidden" aria-live="polite"></section>
+
+            <section class="stats-grid" id="statsGrid" aria-label="Key metrics"></section>
+
+            <section class="controls-bar glass-card">
+                <div class="view-toggle" role="tablist" aria-label="View toggle">
+                    <button id="dayViewBtn" class="btn toggle-btn active" type="button">Day View</button>
+                    <button id="weekViewBtn" class="btn toggle-btn" type="button">Week View</button>
+                </div>
+                <button id="addTaskBtn" class="btn btn-primary" type="button">Add Task</button>
+            </section>
+
+            <div id="currentDate" class="current-date glass-card"></div>
+
+            <section id="taskSkeleton" class="tasks-container hidden" aria-hidden="true">
+                <article class="task-card skeleton glass-card"></article>
+                <article class="task-card skeleton glass-card"></article>
+                <article class="task-card skeleton glass-card"></article>
+            </section>
+
+            <section id="tasksContainer" class="tasks-container" aria-live="polite"></section>
+
+            <section class="summary-section glass-card" id="summarySection">
+                <div class="summary-header">
+                    <h2>Overall Progress</h2>
+                </div>
+                <div class="summary-grid" id="summaryGrid"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="taskModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content glass-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Task</h2>
+                <button type="button" class="close-btn" id="closeModal" aria-label="Close">&times;</button>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskName">Task Name</label>
+                    <input type="text" id="taskName" required placeholder="Workout, Read, Apply to jobs">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskType">Task Type</label>
+                    <select id="taskType">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly Goal</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="targetGroup">
+                    <label for="targetCount">Weekly Target</label>
+                    <input type="number" id="targetCount" min="1" placeholder="Example: 5 times this week">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description (optional)</label>
+                    <textarea id="taskDescription" rows="2" placeholder="Small note or context"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
