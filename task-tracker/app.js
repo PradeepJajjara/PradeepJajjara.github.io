@@ -168,23 +168,35 @@ async function initializeDashboard() {
     }
 
     currentAuthUser = user;
+    setupDashboardListeners();
+
+    const currentUserBadge = byId("currentUser");
+    if (currentUserBadge) {
+        currentUserBadge.textContent = currentAuthUser.email || "Signed in";
+    }
 
     try {
         currentProfile = await fetchProfileById(currentAuthUser.id);
     } catch (error) {
-        showSetupError("Profile record not found for this account. Create a row in profiles table for this user.");
+        showSetupError(
+            `Profile record not found for this account (${currentAuthUser.email || "unknown email"}). Add this auth user id to public.profiles: ${currentAuthUser.id}`
+        );
         showToast("Profile lookup failed.", "error");
+        ["addTaskBtn", "dayViewBtn", "weekViewBtn", "exportBtn", "importBtn"].forEach((id) => {
+            const button = byId(id);
+            if (button) {
+                button.disabled = true;
+            }
+        });
+        byId("masterControls")?.classList.add("hidden");
         return;
     }
 
     viewingUserId = currentProfile.id;
 
-    const currentUserBadge = byId("currentUser");
     if (currentUserBadge) {
         currentUserBadge.textContent = `${currentProfile.username} (${currentProfile.role})`;
     }
-
-    setupDashboardListeners();
 
     if (currentProfile.role === "admin") {
         const masterControls = byId("masterControls");
