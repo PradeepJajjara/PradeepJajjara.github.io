@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insta Watcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-1:#0b1720;--bg-2:#102736;--bg-3:#113548;
+  --glass:rgba(12,24,34,.62);--soft:rgba(16,34,49,.84);
+  --border:rgba(148,180,202,.18);
+  --text:#e8f1f7;--muted:#89a7ba;--body:#c7d8e4;
+  --teal:#2dd4bf;--amber:#fbbf24;--imdb:#f5c518;
+  --r-xl:24px;--r-lg:18px;--r-md:12px;
+  --shadow:0 10px 30px rgba(1,8,13,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:"Manrope","Segoe UI",sans-serif;color:var(--body);background:
+  radial-gradient(circle at 15% 12%,rgba(45,212,191,.2) 0%,transparent 40%),
+  radial-gradient(circle at 88% 8%,rgba(251,191,36,.15) 0%,transparent 35%),
+  linear-gradient(145deg,var(--bg-1) 0%,var(--bg-2) 48%,var(--bg-3) 100%);}
+h1,h2,h3,.stat-val{font-family:"Sora","Manrope",sans-serif;color:var(--text);letter-spacing:-.02em}
+
+.orb{position:fixed;border-radius:999px;filter:blur(4px);pointer-events:none;z-index:-1}
+.orb-1{width:360px;height:360px;top:-120px;left:-40px;background:rgba(45,212,191,.13)}
+.orb-2{width:280px;height:280px;bottom:-80px;right:-60px;background:rgba(251,191,36,.10)}
+
+header{padding:20px 16px 0;max-width:900px;margin:0 auto}
+.header-row{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.logo{font-size:22px;font-family:"Sora",sans-serif;font-weight:700;color:var(--text)}
+.logo span{color:var(--teal)}
+.subtitle{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.stat{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:10px 16px;display:flex;flex-direction:column;gap:2px;flex:1;min-width:70px}
+.stat-val{font-size:20px;font-weight:700}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+.controls{max-width:900px;margin:0 auto;padding:0 16px 16px}
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap input{width:100%;background:var(--glass);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:12px 16px 12px 42px;color:var(--text);
+  font-family:"Manrope",sans-serif;font-size:14px;outline:none}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-wrap input:focus{border-color:var(--teal)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:7px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;
+  transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text);border-color:rgba(148,180,202,.4)}
+.tab.active{background:rgba(45,212,191,.15);border-color:var(--teal);color:var(--teal)}
+
+.grid{max-width:900px;margin:0 auto;padding:0 16px 40px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+
+.card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-xl);
+  padding:18px;display:flex;flex-direction:column;gap:10px;
+  box-shadow:var(--shadow);transition:border-color .2s,transform .15s}
+.card:hover{border-color:rgba(45,212,191,.4);transform:translateY(-2px)}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.cat-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;
+  white-space:nowrap;flex-shrink:0}
+.cat-Movie{background:rgba(45,212,191,.15);color:var(--teal);border:1px solid rgba(45,212,191,.3)}
+.cat-Anime{background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.3)}
+.cat-Series{background:rgba(147,51,234,.2);color:#c084fc;border:1px solid rgba(147,51,234,.3)}
+
+.card-title{font-family:"Sora",sans-serif;font-size:16px;font-weight:700;color:var(--text);
+  line-height:1.3;flex:1}
+.card-meta{font-size:12px;color:var(--muted)}
+
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.score{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600}
+.score-imdb{color:var(--imdb)}
+.score-rt{color:#fa7b17}
+.score-dot{width:6px;height:6px;border-radius:50%}
+.dot-imdb{background:var(--imdb)}
+.dot-rt{background:#fa7b17}
+
+.plot{font-size:12px;color:var(--muted);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+.card-footer{display:flex;gap:8px;margin-top:4px}
+.btn-reel{flex:1;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.25);
+  border-radius:var(--r-md);padding:8px;text-align:center;font-size:12px;font-weight:600;
+  color:var(--teal);text-decoration:none;transition:background .2s}
+.btn-reel:hover{background:rgba(45,212,191,.22)}
+
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:16px}
+
+@media(max-width:480px){
+  .grid{grid-template-columns:1fr}
+  .stat-val{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<header>
+  <div class="header-row">
+    <div class="logo">Insta<span>Watcher</span></div>
+  </div>
+  <div class="subtitle">My saved Instagram reels — classified &amp; rated</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="countAll">91</div><div class="stat-lbl">Total</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--teal)">55</div><div class="stat-lbl">Movies</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--amber)">32</div><div class="stat-lbl">Anime</div></div>
+    <div class="stat"><div class="stat-val" style="color:#c084fc">4</div><div class="stat-lbl">Series</div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="search" id="searchBox" placeholder="Search titles, genres..." autocomplete="off">
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-cat="all">All</div>
+    <div class="tab" data-cat="Movie">🎬 Movies</div>
+    <div class="tab" data-cat="Anime">🌸 Anime</div>
+    <div class="tab" data-cat="Series">📺 Series</div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const DATA = [{"title": "Pro Bono", "category": "Series", "imdb": "7.8", "rt": "N/A", "genre": "Comedy, Drama", "year": "2025–2026", "plot": "When a respected judge's world falls apart overnight, he joins a top law firm's pro bono team - where hope and purpose w", "url": "https://www.instagram.com/reel/DTIxhAsiPtZ/", "username": "kdarams_world"}, {"title": "She Was Pretty", "category": "Series", "imdb": "7.5", "rt": "N/A", "genre": "Comedy, Romance", "year": "2015", "plot": "When Ji Sung-Joon was young, he was ugly. As he grew up, he began to have an attractive appearance. When Kim Hye-Jin was", "url": "https://www.instagram.com/reel/DVSerZYE5Vg/", "username": "primenetflixvideos"}, {"title": "The Devil is a Part-Timer!", "category": "Anime", "imdb": "7.4", "rt": "N/A", "genre": "Animation, Action, Comedy", "year": "2013–2023", "plot": "Hilarity and fun ensues when Satan ends up in modern day Japan without any magic to return, and starts working part time", "url": "https://www.instagram.com/reel/DVNnpIGkmg4/", "username": "weebnationhub"}, {"title": "The Lunchbox", "category": "Movie", "imdb": "7.8", "rt": "97%", "genre": "Drama, Romance", "year": "2013", "plot": "A mistaken delivery in Mumbai's famously efficient lunchbox delivery system connects a young housewife to an older man i", "url": "https://www.instagram.com/reel/DRJm4ppiaLn/", "username": "cinema.lexicon"}, {"title": "Big World", "category": "Movie", "imdb": "7.3", "rt": "N/A", "genre": "Drama, Family", "year": "2024", "plot": "Liu Chunhe, a young man with cerebral palsy, overcomes physical and mental barriers while fulfilling his grandmother's d", "url": "https://www.instagram.com/reel/DUSkjd7jzhg/", "username": "flixocine"}, {"title": "12th Fail", "category": "Movie", "imdb": "8.7", "rt": "91%", "genre": "Biography, Drama", "year": "2023", "plot": "The real-life story of IPS Officer Manoj Kumar Sharma and IRS Officer Shraddha Joshi.", "url": "https://www.instagram.com/reel/DTDkwmgDUwH/", "username": "movie_paragon"}, {"title": "CODA", "category": "Movie", "imdb": "8.0", "rt": "94%", "genre": "Comedy, Drama, Music", "year": "2021", "plot": "When the family's fishing business is threatened, Ruby finds herself torn between pursuing her musical passion and her f", "url": "https://www.instagram.com/reel/DTTvXrCiSP4/", "username": "cinemahub"}, {"title": "Undercover high school", "category": "Movie", "imdb": "8.7", "rt": "N/A", "genre": "Action, Comedy, Thriller", "year": "2025–", "plot": "Ace NIS agent Jung Hae-seong is demoted after a mission failure. He goes undercover at a high school to locate King Gojo", "url": "https://www.instagram.com/reel/DTFCvZhkbbK/", "username": "cinematicomics"}, {"title": "Big World", "category": "Movie", "imdb": "7.3", "rt": "N/A", "genre": "Drama, Family", "year": "2024", "plot": "Liu Chunhe, a young man with cerebral palsy, overcomes physical and mental barriers while fulfilling his grandmother's d", "url": "https://www.instagram.com/reel/DUanOsRgSpi/", "username": "the.film.ritual"}, {"title": "Big World", "category": "Movie", "imdb": "7.3", "rt": "N/A", "genre": "Drama, Family", "year": "2024", "plot": "Liu Chunhe, a young man with cerebral palsy, overcomes physical and mental barriers while fulfilling his grandmother's d", "url": "https://www.instagram.com/reel/DUSkYwaD2fc/", "username": "flixocine"}, {"title": "Dead Poets Society", "category": "Movie", "imdb": "8.1", "rt": "85%", "genre": "Comedy, Drama", "year": "1989", "plot": "Maverick teacher John Keating returns in 1959 to the prestigious New England boys' boarding school where he was once a s", "url": "https://www.instagram.com/reel/DU2l5ecAq4t/", "username": "nightshift_cinema"}, {"title": "Full-Time Magister", "category": "Anime", "imdb": "7.3", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2016–", "plot": "A family with a struggling father and disabled sister. However, when everyone can only have one major element, Mo Fan ca", "url": "https://www.instagram.com/reel/DTFsimqD55g/", "username": "myanimehubs"}, {"title": "Borat", "category": "Movie", "imdb": "7.4", "rt": "90%", "genre": "Comedy", "year": "2006", "plot": "Kazakh TV talking head Borat is dispatched to the United States to report on the greatest country in the world.", "url": "https://www.instagram.com/reel/DUOgv5FEvuH/", "username": "goodmovie_greatmovie"}, {"title": "Champagne Shower", "category": "Series", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DRUOyq-jFcO/", "username": "the_next_flix"}, {"title": "Harry Potter", "category": "Movie", "imdb": "8.1", "rt": "96%", "genre": "Adventure, Family, Fantasy", "year": "2011", "plot": "Harry, Ron and Hermione set out on a quest to eliminate the remaining horcruxes. On the other hand, the students and tea", "url": "https://www.instagram.com/reel/DTu28QmEgv_/", "username": "movieglazer"}, {"title": "Daemons of the Shadow Realm", "category": "Anime", "imdb": "N/A", "rt": "N/A", "genre": "Animation, Drama", "year": "2026–", "plot": "Separated as children and unaware they're siblings, a brother and sister struggle to reunite, reclaim their birthright, ", "url": "https://www.instagram.com/reel/DUYhQ2fk9ZM/", "username": "suraimmu"}, {"title": "Tomo-chan Is a Girl!", "category": "Anime", "imdb": "7.5", "rt": "N/A", "genre": "Animation, Comedy, Drama", "year": "2023", "plot": "Tomo is a tomboy who has been in love with her childhood friend Junichiro, and strives to make him see her as a romantic", "url": "https://www.instagram.com/reel/DUQXdIak7Pv/", "username": "__anime999__"}, {"title": "The Do-Over Damsel Conquers The Dragon Emperor", "category": "Anime", "imdb": "6.3", "rt": "N/A", "genre": "Animation, Action, Comedy", "year": "2024–", "plot": "Time-Leap Fantasy Romcom about a noble woman forced to getting engaged to her kingdom's future mortal enemy to avoid her", "url": "https://www.instagram.com/reel/DUCDDJWk15l/", "username": "animearchive1.2"}, {"title": "Asobi Asobase", "category": "Anime", "imdb": "7.9", "rt": "N/A", "genre": "Animation, Comedy", "year": "2018", "plot": "Three wildly different 8th graders create a \"pastimes\" club to get through the absurdity of middle school. Or something.", "url": "https://www.instagram.com/reel/DT66yKnCJco/", "username": "animes_aesthetic"}, {"title": "Dragon Ball", "category": "Anime", "imdb": "8.5", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "1986–1989", "plot": "A young martial artist named Goku teams up with inventor Bulma and other quirky allies on a globe-trotting quest to find", "url": "https://www.instagram.com/reel/DTMxu-vD8cr/", "username": "hianimehood"}, {"title": "Landman", "category": "Movie", "imdb": "8.2", "rt": "N/A", "genre": "Drama", "year": "2024–", "plot": "A modern-day tale of fortune seeking in the world of West Texas oil rigs.", "url": "https://www.instagram.com/reel/DSzSb-kjkKW/", "username": "netflixnmovies"}, {"title": "The Godfather", "category": "Movie", "imdb": "9.2", "rt": "97%", "genre": "Crime, Drama", "year": "1972", "plot": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.", "url": "https://www.instagram.com/reel/DSuwMGWkpu-/", "username": "mor_flicks"}, {"title": "Reign", "category": "Series", "imdb": "7.4", "rt": "N/A", "genre": "Drama, History, Romance", "year": "2013–2017", "plot": "Mary, Queen of Scots, faces political and sexual intrigue in the treacherous world of the French court.", "url": "https://www.instagram.com/reel/DSlDE1PEywC/", "username": "primereells"}, {"title": "Black Mafia Family", "category": "Movie", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DSoAGNpCIwF/", "username": "reelclipps"}, {"title": "Between One Breath", "category": "Movie", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DSWQflXCWvt/", "username": "reel_laughs17"}, {"title": "Dragon Ball", "category": "Anime", "imdb": "8.5", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "1986–1989", "plot": "A young martial artist named Goku teams up with inventor Bulma and other quirky allies on a globe-trotting quest to find", "url": "https://www.instagram.com/reel/DMLpItfzBFO/", "username": "animeinsider.insta"}, {"title": "Azumanga Daioh", "category": "Anime", "imdb": "8.2", "rt": "N/A", "genre": "Animation, Comedy, Fantasy", "year": "2002", "plot": "A humorous and highly unpredictable animated series following a group of high school girls and their teachers.", "url": "https://www.instagram.com/reel/DQ1VulYjEng/", "username": "anime_domain._1"}, {"title": "One Piece", "category": "Anime", "imdb": "9.0", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "1999–", "plot": "Monkey D. Luffy, a pirate with rubber powers, forms the Straw Hat crew and sails the Grand Line, battling rivals and the", "url": "https://www.instagram.com/reel/DR-MC3iEcEs/", "username": "josieanime_07"}, {"title": "The Passion of the Christ", "category": "Movie", "imdb": "7.3", "rt": "49%", "genre": "Drama", "year": "2004", "plot": "Depicts the final twelve hours in the life of Jesus of Nazareth, on the day of his crucifixion in Jerusalem.", "url": "https://www.instagram.com/reel/DR-aLlXgi5a/", "username": "thefilmtheater"}, {"title": "Dead Mount Death Play", "category": "Anime", "imdb": "6.8", "rt": "N/A", "genre": "Animation, Action, Fantasy", "year": "2023", "plot": "A necromancer in a distant era incarnates himself into a young boy in modern Tokyo. But he gets caught in a mystery abou", "url": "https://www.instagram.com/reel/DSBxLJOiDDp/", "username": "anime_club_4u"}, {"title": "The Witch and the Beast", "category": "Anime", "imdb": "7.0", "rt": "N/A", "genre": "Animation, Action, Drama", "year": "2024", "plot": "A cursed girl and a mysterious man join forces to hunt down an evil witch.", "url": "https://www.instagram.com/reel/DR8qr8liXmV/", "username": "anicontube"}, {"title": "Legend of the Galactic Heroes", "category": "Anime", "imdb": "9.0", "rt": "N/A", "genre": "Animation, Action, Drama", "year": "1988–1997", "plot": "As the Galactic Empire and Free Planets Alliance clash in a long war, rival strategists Reinhard von Lohengramm and Yang", "url": "https://www.instagram.com/reel/DPT1BOQE5fg/", "username": "anime.in.here_"}, {"title": "New York, I Love You", "category": "Movie", "imdb": "6.2", "rt": "37%", "genre": "Comedy, Drama, Romance", "year": "2008", "plot": "Eleven love stories set in one of the most loved and hated cities of the world: New York City.", "url": "https://www.instagram.com/reel/DR3gDB3kQ2s/", "username": "netflixnmovies"}, {"title": "Speechless", "category": "Movie", "imdb": "7.6", "rt": "N/A", "genre": "Comedy", "year": "2016–2019", "plot": "The family of a special-needs teen is good at dealing with the challenges he faces--and excellent at creating new ones.", "url": "https://www.instagram.com/reel/DOQ72QvE3gF/", "username": "movieznchill"}, {"title": "The Good, the Bad and the Ugly", "category": "Movie", "imdb": "8.8", "rt": "97%", "genre": "Adventure, Drama, Western", "year": "1966", "plot": "A bounty-hunting scam joins two men in an uneasy alliance against a third in a race to find a fortune in gold buried in ", "url": "https://www.instagram.com/reel/DRSI6ELEe67/", "username": "reelsclassicos"}, {"title": "CODA", "category": "Movie", "imdb": "8.0", "rt": "94%", "genre": "Comedy, Drama, Music", "year": "2021", "plot": "When the family's fishing business is threatened, Ruby finds herself torn between pursuing her musical passion and her f", "url": "https://www.instagram.com/reel/DRu0iuVjOw7/", "username": "screen_movie_co"}, {"title": "The Ron Clark Story", "category": "Movie", "imdb": "7.6", "rt": "N/A", "genre": "Biography, Drama", "year": "2006", "plot": "A small-town teacher relocates to one of the country's toughest classrooms.", "url": "https://www.instagram.com/reel/DRKoaqPEg4y/", "username": "magic_of.movies"}, {"title": "Pelé: The Birth of a Legend", "category": "Movie", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DPp9VtECGTC/", "username": "andflix"}, {"title": "Light Shop", "category": "Movie", "imdb": "7.8", "rt": "N/A", "genre": "Drama, Horror, Mystery", "year": "2024–", "plot": "The living and the dead intersect as this world and the afterlife are connected through a store selling lighting.", "url": "https://www.instagram.com/reel/DR2BA_FCR-h/", "username": "magic_of.movies"}, {"title": "The Score", "category": "Movie", "imdb": "6.8", "rt": "74%", "genre": "Crime, Drama, Thriller", "year": "2001", "plot": "An aging thief hopes to retire and live off his ill-gotten wealth with his lover when a young kid convinces him into doi", "url": "https://www.instagram.com/reel/DR2O21jk6fx/", "username": "film.oddesey"}, {"title": "A Certain Magical Index", "category": "Anime", "imdb": "6.8", "rt": "N/A", "genre": "Animation, Action, Comedy", "year": "2008–2019", "plot": "Index flees from powerful organizations that seek to extract its knowledge, sparking conflicts. Helped by Touma, Misaka ", "url": "https://www.instagram.com/reel/DRq5z8cEZkI/", "username": "nexushubanime"}, {"title": "Lamborghini: The Man Behind the Legend", "category": "Movie", "imdb": "5.5", "rt": "6%", "genre": "Biography, Drama, Sport", "year": "2022", "plot": "This thrilling, high-speed biopic reveals one man's dream of making the world's fastest car-and beating rival Enzo Ferra", "url": "https://www.instagram.com/reel/DNsqZdkZNgS/", "username": "moviestvfilms"}, {"title": "Race", "category": "Movie", "imdb": "7.1", "rt": "64%", "genre": "Biography, Drama, Sport", "year": "2016", "plot": "Jesse Owens' quest to become the greatest track and field athlete in history thrusts him onto the world stage of the 193", "url": "https://www.instagram.com/reel/DOOyvllEl2v/", "username": "cinetales001"}, {"title": "Four Lions", "category": "Movie", "imdb": "7.3", "rt": "84%", "genre": "Comedy, Crime, Drama", "year": "2010", "plot": "Four incompetent British terrorists from Sheffield, set out to train for and commit an act of terror.", "url": "https://www.instagram.com/reel/DRsfpY1iJwi/", "username": "filmroomtv"}, {"title": "Dusk Beyond the End of the World", "category": "Anime", "imdb": "6.3", "rt": "N/A", "genre": "Animation, Romance, Sci-Fi", "year": "2025–", "plot": "Against the backdrop of a changing world, a tender romance between human and machine forces society to question the very", "url": "https://www.instagram.com/reel/DRG7jAzEgvM/", "username": "animechronix"}, {"title": "Medaka Box", "category": "Anime", "imdb": "6.5", "rt": "N/A", "genre": "Animation, Action, Comedy", "year": "2012", "plot": "Medaka, elected student council president, introduces a suggestion box to help fellow students. However, some submission", "url": "https://www.instagram.com/reel/DRj5Vp1jBM4/", "username": "senpai_nova0"}, {"title": "Analyze That", "category": "Movie", "imdb": "5.9", "rt": "26%", "genre": "Comedy, Crime", "year": "2002", "plot": "Mobster Paul Vitti is released into Dr. Ben Sobol's care, where only more chaos ensues.", "url": "https://www.instagram.com/reel/DRlWKx8iVM6/", "username": "dailymoviecuts"}, {"title": "Magnolia", "category": "Movie", "imdb": "8.0", "rt": "82%", "genre": "Drama", "year": "1999", "plot": "An epic mosaic of interrelated characters in search of love, forgiveness and meaning in the San Fernando Valley.", "url": "https://www.instagram.com/reel/DPG_DfdgfG1/", "username": "filmterminal"}, {"title": "Shadow Ninja", "category": "Anime", "imdb": "6.1", "rt": "100%", "genre": "Action, Thriller", "year": "2013", "plot": "Ninjitsu master Casey is back and out for revenge when his pregnant wife is murdered.", "url": "https://www.instagram.com/reel/DOLyMNNk-ht/", "username": "ishowanimei"}, {"title": "I’m Quitting Heroing", "category": "Anime", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DPkgHwEktVy/", "username": "anime_club_4u"}, {"title": "Record of Grancrest War", "category": "Anime", "imdb": "7.1", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2018–", "plot": "Lone mage Siluca wanders the land of Atlatan, disgusted by its greedy nobility. When she meets knight errant Theo, she s", "url": "https://www.instagram.com/reel/DRXDNHnk1rf/", "username": "anime.world.1511"}, {"title": "Blood Blockade Battlefront", "category": "Anime", "imdb": "7.2", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2015–2017", "plot": "The hit show from the creator of Trigun continues its crime-fighting, otherworldly adventure in the chaotic city of Hell", "url": "https://www.instagram.com/reel/DReZJIliPnx/", "username": "anime_club_4u"}, {"title": "The Homesman", "category": "Movie", "imdb": "6.6", "rt": "81%", "genre": "Drama, Western", "year": "2014", "plot": "Three women who have been driven mad by pioneer life are to be transported across the country by covered wagon by the pi", "url": "https://www.instagram.com/reel/DPwQCkYDiAQ/", "username": "corefilmsdaily"}, {"title": "Bad Moms", "category": "Movie", "imdb": "6.2", "rt": "59%", "genre": "Comedy", "year": "2016", "plot": "When three overworked and under-appreciated moms are pushed beyond their limits, they ditch their conventional responsib", "url": "https://www.instagram.com/reel/DRYqTUDkcsC/", "username": "popcornbit_"}, {"title": "I've Somehow Gotten Stronger When I Improved My Farm-Related Skills", "category": "Movie", "imdb": "5.7", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2022", "plot": "Al Wayne masters farming, but his life takes an unexpected turn after reaching the pinnacle of his agricultural skills.", "url": "https://www.instagram.com/reel/DQyHncxCeWz/", "username": "flixzo_"}, {"title": "Fracture", "category": "Movie", "imdb": "7.2", "rt": "72%", "genre": "Crime, Drama, Thriller", "year": "2007", "plot": "After shooting his wife, Ted confesses his crime and asks the court to move his case to trial. He represents himself aga", "url": "https://www.instagram.com/reel/DQR6vb0ks6H/", "username": "cinemaphilejournal"}, {"title": "Blackadder", "category": "Movie", "imdb": "8.0", "rt": "N/A", "genre": "Comedy", "year": "1982–1983", "plot": "In the Middle Ages, Prince Edmund the Black Adder constantly schemes and endeavors to seize the crown from his father an", "url": "https://www.instagram.com/reel/DRDHRLbDmzs/", "username": "movie_scenarist"}, {"title": "Sweetwater", "category": "Movie", "imdb": "6.2", "rt": "25%", "genre": "Drama, Thriller, Western", "year": "2013", "plot": "In the late 1800s, a fanatical religious leader, a renegade Sheriff, and a former prostitute collide in a blood triangle", "url": "https://www.instagram.com/reel/DNdFq7IB_0W/", "username": "moviesparks14"}, {"title": "The Other Guys", "category": "Movie", "imdb": "6.7", "rt": "78%", "genre": "Action, Comedy, Crime", "year": "2010", "plot": "Two mismatched New York City detectives seize an opportunity to step up like the city's top cops, whom they idolize, onl", "url": "https://www.instagram.com/reel/DOpKx4lDMce/", "username": "findingoodfilmsdaily"}, {"title": "Kundun", "category": "Movie", "imdb": "7.0", "rt": "76%", "genre": "Biography, Drama, History", "year": "1997", "plot": "From childhood to adulthood, Tibet's fourteenth Dalai Lama deals with Chinese oppression and other problems.", "url": "https://www.instagram.com/reel/DPDjldXDcqV/", "username": "cinema2see"}, {"title": "Ran", "category": "Movie", "imdb": "8.2", "rt": "96%", "genre": "Action, Drama, War", "year": "1985", "plot": "In Medieval Japan, an elderly warlord retires, handing over his empire to his three sons. However, he vastly underestima", "url": "https://www.instagram.com/reel/DQUoS2eEgnb/", "username": "cinescapemind"}, {"title": "Joe Pickett", "category": "Movie", "imdb": "7.6", "rt": "N/A", "genre": "Drama, Western", "year": "2021–2023", "plot": "Follows a game warden and his family during a changing political and socioeconomic climate in a small rural town.", "url": "https://www.instagram.com/reel/DRF_018jF-f/", "username": "bestmovies0nly"}, {"title": "King of New York", "category": "Movie", "imdb": "6.9", "rt": "74%", "genre": "Crime, Thriller", "year": "1990", "plot": "A drug kingpin is released from prison and seeks to take total control of the criminal underworld in order to give back ", "url": "https://www.instagram.com/reel/DRCdlRVDD4m/", "username": "the_goodfilms"}, {"title": "Love Live! School Idol Project", "category": "Anime", "imdb": "7.9", "rt": "N/A", "genre": "Animation, Short, Music", "year": "2013", "plot": "Narrated recap of Love Live!: School Idol Project (2013) included on the official Blu-ray fandisc release.", "url": "https://www.instagram.com/reel/DP3FQoJAdhM/", "username": "spectreweeb"}, {"title": "The Detour", "category": "Movie", "imdb": "7.7", "rt": "N/A", "genre": "Adventure, Comedy", "year": "2016–2019", "plot": "A contemporary father takes his family on a road trip across America, but a set of crazy, unforeseen circumstances cause", "url": "https://www.instagram.com/reel/DQnwaLyitIB/", "username": "moviesparks14"}, {"title": "Unfaithful", "category": "Movie", "imdb": "6.7", "rt": "51%", "genre": "Drama, Romance, Thriller", "year": "2002", "plot": "A New York suburban couple's marriage goes dangerously awry when the wife indulges in an adulterous fling.", "url": "https://www.instagram.com/reel/DPyiQQzkth0/", "username": "moviezunbox"}, {"title": "The Naked Gun", "category": "Movie", "imdb": "6.5", "rt": "87%", "genre": "Action, Comedy, Crime", "year": "2025", "plot": "Following in his father's footsteps, a detective works to solve a murder case and save his police department from closur", "url": "https://www.instagram.com/reel/DP0g5yLjKNW/", "username": "reelunityusa"}, {"title": "Gandhi", "category": "Movie", "imdb": "8.0", "rt": "89%", "genre": "Biography, Drama, History", "year": "1982", "plot": "The life of the lawyer who became the famed leader of the Indian revolts against the British rule through his philosophy", "url": "https://www.instagram.com/reel/DPTVhJfCMqG/", "username": "cinequiet"}, {"title": "Detachment", "category": "Movie", "imdb": "7.7", "rt": "59%", "genre": "Drama", "year": "2011", "plot": "A substitute teacher who drifts from classroom to classroom finds a connection to the students and teachers during his l", "url": "https://www.instagram.com/reel/DPY639JiDIC/", "username": "movie_stalking"}, {"title": "Plunderer", "category": "Movie", "imdb": "6.5", "rt": "N/A", "genre": "Animation, Action, Fantasy", "year": "2020", "plot": "Everyone's \"Count\" is a number based on life choices, but avoid reaching 0 or you'll be sent to the Abyss!.", "url": "https://www.instagram.com/reel/DPonbfYEts0/", "username": "moviereview_7"}, {"title": "My Cousin Vinny", "category": "Movie", "imdb": "7.6", "rt": "85%", "genre": "Comedy, Crime", "year": "1992", "plot": "Two New Yorkers accused of murder in rural Alabama while on their way back to college call in the help of one of their c", "url": "https://www.instagram.com/reel/DPjMo7kkZKM/", "username": "robert_de_niro_movies"}, {"title": "42", "category": "Movie", "imdb": "7.5", "rt": "80%", "genre": "Biography, Drama, Sport", "year": "2013", "plot": "In 1947, Jackie Robinson becomes the first African-American to play in Major League Baseball in the modern era when he w", "url": "https://www.instagram.com/reel/DO3o-GLiTve/", "username": "moviesparks14"}, {"title": "Blue Bloods", "category": "Movie", "imdb": "7.7", "rt": "N/A", "genre": "Crime, Drama, Mystery", "year": "2010–2024", "plot": "Follows the professional and personal lives of the Reagans, a family of New York Cops, who all work in different positio", "url": "https://www.instagram.com/reel/DNdeTu-vD8f/", "username": "moviecaffes"}, {"title": "The Happening", "category": "Movie", "imdb": "5.0", "rt": "17%", "genre": "Adventure, Drama, Sci-Fi", "year": "2008", "plot": "A science teacher, his wife, and a young girl struggle to survive a plague that causes those infected to commit suicide.", "url": "https://www.instagram.com/reel/DNEkRMvvKJ-/", "username": "bestmovies0nly"}, {"title": "The Naked Gun", "category": "Movie", "imdb": "6.5", "rt": "87%", "genre": "Action, Comedy, Crime", "year": "2025", "plot": "Following in his father's footsteps, a detective works to solve a murder case and save his police department from closur", "url": "https://www.instagram.com/reel/DOfsDOdDn46/", "username": "netflixnmovies"}, {"title": "The Mick", "category": "Movie", "imdb": "7.8", "rt": "N/A", "genre": "Comedy", "year": "2017–2018", "plot": "A hard-living aunt is forced to take care of her wealthy sister's spoiled kids after the mom flees the country to avoid ", "url": "https://www.instagram.com/reel/DOrFk-sEzwu/", "username": "moviekingsofficial"}, {"title": "Zenonzard The Animation", "category": "Anime", "imdb": "7.6", "rt": "N/A", "genre": "Animation", "year": "2019–", "plot": "The year 20XX. Humans called Concodes and ultra-high-performance AI called Codeman team up as buddies to compete in the ", "url": "https://www.instagram.com/reel/DObXk5AjGIZ/", "username": "shasha_anime_epic"}, {"title": "Non Non Biyori", "category": "Anime", "imdb": "7.8", "rt": "N/A", "genre": "Animation, Adventure, Comedy", "year": "2013–2021", "plot": "When Hotaru Ichijo transfers schools from the hustle and bustle of Tokyo to a quaint and quiet village in the countrysid", "url": "https://www.instagram.com/reel/DNA1Aa-P0X6/", "username": "otaku.universe_x"}, {"title": "Maoyu: Archenemy & Hero", "category": "Anime", "imdb": "6.7", "rt": "N/A", "genre": "Animation, Fantasy, Romance", "year": "2013", "plot": "When Hero discovers that the Demon King is not what he expected, the two begin to strike a deal that could save the worl", "url": "https://www.instagram.com/reel/DHWK1W-yP4k/", "username": "anixh_ub"}, {"title": "Non Non Biyori", "category": "Anime", "imdb": "7.8", "rt": "N/A", "genre": "Animation, Adventure, Comedy", "year": "2013–2021", "plot": "When Hotaru Ichijo transfers schools from the hustle and bustle of Tokyo to a quaint and quiet village in the countrysid", "url": "https://www.instagram.com/reel/DM_o1x-h8Gt/", "username": "toranime_"}, {"title": "Chivalry of a Failed Knight", "category": "Anime", "imdb": "7.2", "rt": "N/A", "genre": "Animation, Action, Fantasy", "year": "2015", "plot": "Ikki Kurogane struggles as the worst Blazer, only able to materialize his soul into a weak weapon. His dreams of becomin", "url": "https://www.instagram.com/reel/DOCvUASE72B/", "username": "weebspectre"}, {"title": "Baccano", "category": "Anime", "imdb": "8.2", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2007–2008", "plot": "A crazy fantasy caper involving alchemists, immortals, gangsters, outlaws and an elixir of immortality, spread over seve", "url": "https://www.instagram.com/reel/DNqUK6pMxCw/", "username": "shasha_anime_epic"}, {"title": "Trinity Seven", "category": "Anime", "imdb": "6.7", "rt": "N/A", "genre": "Animation, Action, Comedy", "year": "2014–2015", "plot": "Arata Kasuga's life falls apart as a bizarre incident causes worldwide destruction and takes his cousin, Hijiri Kasuga, ", "url": "https://www.instagram.com/reel/DHq1k-DSJ-3/", "username": "anixh_ub"}, {"title": "Hitori no Shita - The Outcast", "category": "Anime", "imdb": "6.8", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2015–2023", "plot": "Cho Soran leads an ordinary college student's life until he becomes involved in a terrible incident in a small town. Whi", "url": "https://www.instagram.com/reel/DNLLBoHvJ-f/", "username": "otakuonii_chan"}, {"title": "Cautious Hero: The Hero Is Overpowered but Overly Cautious", "category": "Anime", "imdb": "7.3", "rt": "N/A", "genre": "Animation, Action, Adventure", "year": "2019", "plot": "The goddess Rista summons a hero to help her in her hard mode video game world. The hero, Seiya, is exceptional in every", "url": "https://www.instagram.com/reel/DH5cWkTKBrq/", "username": "its_animeleopard"}, {"title": "Pirates of the Caribbean", "category": "Movie", "imdb": "8.1", "rt": "79%", "genre": "Action, Adventure, Fantasy", "year": "2003", "plot": "Blacksmith Will Turner teams up with eccentric pirate \"Captain\" Jack Sparrow to save Elizabeth Swann, the governor's dau", "url": "https://www.instagram.com/reel/DGtqfhSzf1U/", "username": "goodmovie_greatmovie"}, {"title": "Tropic Thunder", "category": "Movie", "imdb": "7.1", "rt": "82%", "genre": "Action, Comedy, War", "year": "2008", "plot": "Through a series of freak occurrences, a group of actors shooting a big-budget war movie are forced to become the soldie", "url": "https://www.instagram.com/reel/DNEN26JAXuK/", "username": "moviemoments"}, {"title": "Archenemy and Hero", "category": "Anime", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DJ4NMJqvfCA/", "username": "animemongoing"}, {"title": "Level 1 Dakedo Unique Skill de Saikyou desu", "category": "Anime", "imdb": "N/A", "rt": "N/A", "genre": "N/A", "year": "N/A", "plot": "N/A", "url": "https://www.instagram.com/reel/DNL33dltajW/", "username": "jujutsu.daily"}, {"title": "Tulsa King", "category": "Movie", "imdb": "7.9", "rt": "N/A", "genre": "Action, Crime, Drama", "year": "2022–", "plot": "After being released from prison after 25 years, New York Mafia capo Dwight \"The General\" Manfredi is exiled to Tulsa, O", "url": "https://www.instagram.com/reel/DNRWIM9y9lB/", "username": "netflixnmovies"}, {"title": "A Bronx Tale", "category": "Movie", "imdb": "7.8", "rt": "97%", "genre": "Crime, Drama", "year": "1993", "plot": "An intense drama about a boy torn between his tough, hard-working father and a violent yet charismatic crime boss.", "url": "https://www.instagram.com/reel/DH04OxLyvdk/", "username": "robert_de_niro_movies"}];
+let activeCat = 'all', query = '';
+
+function render() {
+  const grid = document.getElementById('grid');
+  const q = query.toLowerCase();
+  const filtered = DATA.filter(c => {
+    const catOk = activeCat === 'all' || c.category === activeCat;
+    const txtOk = !q || c.title.toLowerCase().includes(q)
+      || (c.genre||'').toLowerCase().includes(q)
+      || (c.plot||'').toLowerCase().includes(q);
+    return catOk && txtOk;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No results found</div></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(c => {
+    const imdb = c.imdb && c.imdb !== 'N/A'
+      ? `<div class="score score-imdb"><span class="score-dot dot-imdb"></span>⭐ ${c.imdb}</div>` : '';
+    const rt = c.rt && c.rt !== 'N/A'
+      ? `<div class="score score-rt"><span class="score-dot dot-rt"></span>🍅 ${c.rt}</div>` : '';
+    const meta = [c.genre, c.year].filter(Boolean).join(' · ');
+    const plot = c.plot ? `<div class="plot">${c.plot}</div>` : '';
+    const reelBtn = c.url
+      ? `<a class="btn-reel" href="${c.url}" target="_blank" rel="noopener">▶ View Reel</a>` : '';
+    return `
+    <div class="card">
+      <div class="card-top">
+        <div class="card-title">${c.title}</div>
+        <span class="cat-badge cat-${c.category}">${c.category}</span>
+      </div>
+      ${meta ? `<div class="card-meta">${meta}</div>` : ''}
+      ${(imdb||rt) ? `<div class="scores">${imdb}${rt}</div>` : ''}
+      ${plot}
+      ${reelBtn ? `<div class="card-footer">${reelBtn}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    activeCat = t.dataset.cat;
+    render();
+  });
+});
+
+document.getElementById('searchBox').addEventListener('input', e => {
+  query = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
